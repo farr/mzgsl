@@ -31,7 +31,7 @@
     ((macosx)
      (list "/usr/local/lib"
            "/opt/local/lib"
-           "/sw/local/lib"))
+           "/sw/lib"))
     (else '())))
 
 (define cblaslibname
