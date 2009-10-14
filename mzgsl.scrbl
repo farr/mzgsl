@@ -14,8 +14,8 @@ the GSL are bound.
 
 You can use the bindings from @filepath{mzgsl.plt} in your programs by
 issuing the command @scheme[(require (planet "all.ss" ("wmfarr"
-"mzgsl.plt" 3 0)))] or, in shortened notation @scheme[(require (planet
-wmfarr/mzgsl:3:0/all))].  The @filepath["all.ss"] module exports all
+"mzgsl.plt" 3 1)))] or, in shortened notation @scheme[(require (planet
+wmfarr/mzgsl:3:1/all))].  The @filepath["all.ss"] module exports all
 bindings of the @filepath{mzgsl.plt} package.
 
 The mzgsl.plt package is released under the GPL; see the
@@ -26,7 +26,7 @@ bug reports to that address.
 
 @section[#:tag "FFI-libraries"]{FFI Libraries}
 
-@defmodule[(planet wmfarr/mzgsl:3:0/gsl-lib)]
+@defmodule[(planet wmfarr/mzgsl:3:1/gsl-lib)]
 
 The system makes a reasonable effort to find the libraries for the GSL
 and GSL's CBLAS on your system; if it cannot, report it as a bug, and
@@ -40,7 +40,7 @@ ffi-lib objects which point to the corresponding foreign library.
 
 @section[#:tag "RNG"]{Random Number Generation}
 
-@defmodule[(planet wmfarr/mzgsl:3:0/gsl-rng)]
+@defmodule[(planet wmfarr/mzgsl:3:1/gsl-rng)]
 
 The following functions are provided by @filepath["gsl-rng.ss"].  The
 naming scheme follows very closely the GSL naming scheme, with
