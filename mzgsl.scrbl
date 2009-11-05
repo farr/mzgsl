@@ -25,7 +25,7 @@ bindings of the @filepath{mzgsl.plt} package.
 The mzgsl.plt package is released under the GPL; see the
 @secref["License"] section of this document for more information.
 @filepath{mzgsl.plt} is maintained by
-@link["mailto:farr@mit.edu"]{Will M. Farr}; send feature requests and
+@link["mailto:wmfarr@gmail.com"]{Will M. Farr}; send feature requests and
 bug reports to that address.
 
 @section[#:tag "FFI-libraries"]{FFI Libraries}
