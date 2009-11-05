@@ -1,6 +1,6 @@
 #lang scheme
 
-#|  gsl-rng.ss: Wraps gsl random number generators.
+#|  gsl-function.ss: Wraps gsl functions.
     Copyright (C) 2008 Will M. Farr <farr@mit.edu>
 
     This program is free software; you can redistribute it and/or modify
