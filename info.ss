@@ -22,7 +22,7 @@
 (define blurb
   (list "Bindings to the GNU Scientific Library for MzScheme.  See the Science collection for native MzScheme libraries which implement much of this functionality."))
 (define primary-file "all.ss")
-(define scribblings '(("mzgsl.scrbl" ())))
+(define scribblings '(("mzgsl.scrbl" (multi-page))))
 (define release-notes
   (list '(p "Version 3.0: Updated to PLT Scheme v4.")
         '(p "Version 2.0: Eliminated gsl-rng-free from exports.  Memory is managed automatically, so there is no need to manually free random number generators.")

@@ -6,7 +6,8 @@
           (for-label "gsl-rng.ss")
           (for-label "gsl-lib.ss")
           (for-label "gsl-function.ss")
-          (for-label "gsl-roots.ss"))
+          (for-label "gsl-roots.ss")
+          (for-label "gsl-interp.ss"))
 
 @title{MzGSL: MzScheme Bindings to the GNU Scientific Library}
 
@@ -326,6 +327,128 @@ Procedures to manipulate solvers that do require derivatives.
           boolean?])]{
 
 Iteration-stopping test functions.
+
+}
+
+@section[#:tag "Interpolation"]{Interpolation}
+@defmodule[(planet wmfarr/mzgsl:3:1/gsl-interp)]
+
+This section discusses the bindings to the @filepath["gsl_interp.h"]
+and @filepath["gsl_spline.h"] functions.
+
+@deftogether[
+(@defthing[_gsl-interp-type-pointer ctype?]
+ @defthing[_gsl-interp-pointer ctype?]
+ @defthing[_gsl-interp-accel-pointer ctype?]
+ @defthing[_gsl-spline-pointer ctype?]
+ @defproc[(gsl-interp-type? (obj any/c)) boolean?]
+ @defproc[(gsl-interp? (obj any/c)) boolean?]
+ @defproc[(gsl-interp-accel? (obj any/c)) boolean?]
+ @defproc[(gsl-spline? (obj any/c)) boolean?])]{
+
+Foreign types and predicates for this module.
+
+}
+
+@deftogether[
+(@defproc[(gsl-interp-alloc (type gsl-interp-type?) (size integer?))
+          gsl-interp?]
+ @defproc[(gsl-interp-init! (interp gsl-interp?) (xs f64vector?)
+                            (ys f64vector?) (size integer?))
+          integer?])]{
+
+Allocate and initialize an interpolation object. 
+
+}
+
+@deftogether[
+(@defthing[gsl-interp-linear gsl-interp-type?]
+ @defthing[gsl-interp-polynomial gsl-interp-type?]
+ @defthing[gsl-interp-cspline gsl-interp-type?]
+ @defthing[gsl-interp-cspline-periodic gsl-interp-type?]
+ @defthing[gsl-interp-akima gsl-interp-type?]
+ @defthing[gsl-interp-akima-periodic gsl-interp-type?])]{
+
+Interpolation types.
+
+}
+
+@deftogether[
+(@defproc[(gsl-interp-name (interp gsl-interp?)) string?]
+ @defproc[(gsl-interp-min-size (interp gsl-interp?)) integer?])]{
+
+Queries for interp object properties.
+
+}
+
+@deftogether[
+(@defproc[(gsl-interp-bsearch (xs f64vector?) (x real?) 
+                              (low-index natural-number/c)
+                              (high-index natural-number/c))
+          natural-number/c]
+ @defproc[(gsl-interp-accel-alloc) gsl-interp-accel?]
+ @defproc[(gsl-interp-accel-find (acc gsl-interp-accel?)
+                                 (xs f64vector?)
+                                 (x real?))
+          natural-number/c])]{
+
+Accelerator object procedures. 
+
+}
+
+@deftogether[
+(@defproc[(gsl-interp-eval (interp gsl-interp?) (xs f64vector?)
+                           (ys f64vector?) (x real?) (acc gsl-interp-accel?))
+          real?]
+ @defproc[(gsl-interp-eval-deriv (interp gsl-interp?) (xs f64vector?)
+                           (ys f64vector?) (x real?) (acc gsl-interp-accel?))
+          real?]
+ @defproc[(gsl-interp-eval-deriv2 (interp gsl-interp?) (xs f64vector?)
+                           (ys f64vector?) (x real?) (acc gsl-interp-accel?))
+          real?]
+ @defproc[(gsl-interp-eval-integ (interp gsl-interp?) (xs f64vector?)
+                           (ys f64vector?) (x real?) (acc gsl-interp-accel?))
+          real?])]{
+
+Evaluate interpolations and their derivatives and integrals. 
+
+}
+
+@deftogether[
+(@defproc[(gsl-spline-alloc (type gsl-interp-type?) (size natural-number/c))
+          gsl-spline?]
+ @defproc[(gsl-spline-init! (spline gsl-spline?)
+                            (xs f64vector?) (ys f64vector?))
+          integer?])]{
+
+Allocate and initialize a spline object.  Splines are more convenient
+packages for fitting than interp objects because they store the x- and
+y-values internally instead of getting them in a procedure call.
+
+}
+
+@deftogether[
+(@defproc[(gsl-spline-name (sp gsl-spline?)) string?]
+ @defproc[(gsl-spline-min-size (sp gsl-spline?)) natural-number/c])]{
+
+Queries for spline object properties.
+
+}
+
+@deftogether[
+(@defproc[(gsl-spline-eval (sp gsl-spline?) (x real?) (acc gsl-interp-accel?))
+          real?]
+ @defproc[(gsl-spline-eval-deriv
+           (sp gsl-spline?) (x real?) (acc gsl-interp-accel?))
+          real?]
+ @defproc[(gsl-spline-eval-deriv2
+           (sp gsl-spline?) (x real?) (acc gsl-interp-accel?))
+          real?]
+ @defproc[(gsl-spline-eval-integ
+           (sp gsl-spline?) (x real?) (acc gsl-interp-accel?))
+          real?])]{
+
+Evaluate the interpolation stored in a spline.
 
 }
 
