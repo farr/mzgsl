@@ -2,8 +2,11 @@
 
 @(require scribble/manual
           (for-label scheme)
+          (for-label (except-in scheme/foreign ->))
           (for-label "gsl-rng.ss")
-          (for-label "gsl-lib.ss"))
+          (for-label "gsl-lib.ss")
+          (for-label "gsl-function.ss")
+          (for-label "gsl-roots.ss"))
 
 @title{MzGSL: MzScheme Bindings to the GNU Scientific Library}
 
@@ -178,6 +181,151 @@ Get the internal state of the generator.
               (defproc (gsl-rng-uniform-int (rng gsl-rng) (max integer?)) integer?))]{
 
 Get random numbers from the generator.
+
+}
+
+@section[#:tag "GSL Functions"]{GSL Functions}
+@defmodule[(planet wmfarr/mzgsl:3:1/gsl-function)]
+
+@deftogether[
+(@defthing[_gsl-function ctype?]
+ @defthing[_gsl-function-pointer ctype?]
+ @defproc[(make-gsl-function 
+           (function (_fun _double _pointer -> _double))
+           (params _pointer))
+          gsl-function?]
+ @defproc[(gsl-function? (obj any/c)) boolean?]
+ @defproc[(gsl-function-function (fun gsl-function?))
+          (_fun _double _pointer -> _double)]
+ @defproc[(gsl-function-params (fun gsl-function?)) cpointer?])]{
+
+Wraps scheme functions as GSL ``closures.''  When a scheme function is
+wrapped, a corresponding C function is generated on the fly that takes
+the appropriate arguments, wraps them, and then calls out to the
+scheme function.  This C-side wrapper will exist only as long as the
+corresponding scheme function exists, so it is important to hang on to
+a reference to your scheme functions that you store in
+@scheme[__gsl-function] structs.  Also, each scheme function that is
+wrapped in this way can only ``store'' one C-side function, so don't
+wrap the same function in multiple @scheme[__gsl-function] structs.
+For more on this, see the documentation of the @scheme[#:keep?]
+argument to @scheme[_cprocedure]; the functions stored in a
+@scheme[__gsl-function] use the @scheme[#t] argument to
+@scheme[_cprocedure]'s @scheme[#:keep].
+
+}
+
+@deftogether[
+(@defthing[_gsl-function-fdf ctype?]
+ @defthing[_gsl-function-fdf-pointer ctype?]
+ @defproc[(make-gsl-function-fdf 
+           (f (_fun _double* _pointer -> _double*))
+           (df (_fun _double _pointer -> _double*))
+           (f-df (_fun _double* _pointer _pointer _pointer -> _void))
+           (params _pointer))
+          gsl-function-fdf?]
+ @defproc[(gsl-function-fdf? (obj any/c)) boolean?]
+ @defproc[(gsl-function-fdf-f (fun gsl-function-fdf?)) (_fun _double* _pointer -> _double*)]
+ @defproc[(gsl-function-fdf-df 
+           (fun gsl-function-fdf?))
+          (_fun _double _pointer -> _double*)]
+ @defproc[(gsl-function-fdf-f-df (fun gsl-function-fdf?))
+          (_fun _double* _pointer _pointer _pointer -> _void)]
+ @defproc[(gsl-function-fdf-params (fun gsl-function-fdf?)) cpointer?])]{
+
+Same as @scheme[_gsl-function], but for functions with derivative.
+
+}
+
+@section[#:tag "gsl-roots"]{Root Finding}
+@defmodule[(planet wmfarr/mzgsl:3:1/gsl-roots)]
+
+This section discusses the wrapper for the root finding procedures in
+the GSL.
+
+@deftogether[
+(@defproc[(gsl-root-fsolver-type? (obj any/c)) boolean?]
+ @defproc[(gsl-root-fsolver? (obj any/c)) boolean?]
+ @defproc[(gsl-root-fdfsolver-type? (obj any/c)) boolean?]
+ @defproc[(gsl-root-fdfsolver? (obj any/c)) boolean?])]{
+
+Predicates for the types in this module.                              
+
+}
+
+@deftogether[
+(@defproc[(gsl-root-fsolver-alloc (type gsl-root-fsolver-type?)) 
+          gsl-root-fsolver?]
+ @defproc[(gsl-root-fdfsolver-alloc (type gsl-root-fdfsolver-type?))
+         gsl-root-fdfsolver?])]{
+
+Allocate solvers.
+
+}
+
+@deftogether[
+(@defthing[gsl-root-fsolver-bisection gsl-root-fsolver-type?]
+ @defthing[gsl-root-fsolver-brent gsl-root-fsolver-type?]
+ @defthing[gsl-root-fsolver-falsepos gsl-root-fsolver-type?])]{
+
+Root finders that do not require derivative information.
+
+}
+
+@deftogether[
+(@defthing[gsl-root-fdfsolver-newton gsl-root-fdfsolver-type?]
+ @defthing[gsl-root-fdfsolver-secant gsl-root-fdfsolver-type?]
+ @defthing[gsl-root-fdfsolver-steffenson gsl-root-fdfsolver-type?])]{
+
+Root finders that do require derivative information.
+
+}
+
+@deftogether[
+(@defproc[(gsl-root-fsolver-set! 
+           (solver gsl-root-fsolver?)
+           (f gsl-function?)
+           (x-min real?)
+           (x-max real?))
+          integer?]
+ @defproc[(gsl-root-fsolver-iterate! (solver gsl-root-fsolver?)) integer?]
+ @defproc[(gsl-root-fsolver-name (solver gsl-root-fsolver?)) string?]
+ @defproc[(gsl-root-fsolver-x-lower (solver gsl-root-fsolver?)) real?]
+ @defproc[(gsl-root-fsolver-x-upper (solver gsl-root-fsolver?)) real?])]{
+
+Procedures to manipulate solvers that do not require derivatives. 
+
+}
+
+@deftogether[
+(@defproc[(gsl-root-fdfsolver-set! 
+           (solver gsl-root-fdfsolver?)
+           (f gsl-function-fdf?)
+           (x real?))
+          integer?]
+ @defproc[(gsl-root-fdfsolver-iterate! (solver gsl-root-fdfsolver?)) integer?]
+ @defproc[(gsl-root-fdfsolver-root (solver gsl-root-fdfsolver?)) real?])]{
+
+Procedures to manipulate solvers that do require derivatives.
+
+}
+
+@deftogether[
+(@defproc[(gsl-root-test-interval 
+           (x-lower real?)
+           (x-upper real?)
+           (epsabs real?)
+           (epsrel real?))
+          boolean?]
+ @defproc[(gsl-root-test-residual (f real?) (epsabs real?)) boolean?]
+ @defproc[(gsl-root-test-delta
+           (x1 real?)
+           (x0 real?)
+           (epsabs real?)
+           (epsrel real?))
+          boolean?])]{
+
+Iteration-stopping test functions.
 
 }
 
