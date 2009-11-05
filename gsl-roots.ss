@@ -12,6 +12,7 @@
      (begin
        (define tag (gensym '_name-pointer))
        (define _name-pointer (_cpointer tag))
+       (provide name?)
        (define (name? obj)
          (and (cpointer? obj)
               (cpointer-has-tag? obj tag)))))))
