@@ -19,7 +19,11 @@
 |#
 
 
-(require "gsl-rng.ss" "gsl-lib.ss")
+(require "gsl-rng.ss" "gsl-lib.ss" "gsl-roots.ss" 
+         "gsl-interp.ss" "gsl-function.ss")
 
 (provide (all-from-out "gsl-rng.ss")
-         (all-from-out "gsl-lib.ss"))
+         (all-from-out "gsl-lib.ss")
+         (all-from-out "gsl-roots.ss")
+         (all-from-out "gsl-interp.ss")
+         (all-from-out "gsl-function.ss"))
