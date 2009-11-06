@@ -13,8 +13,10 @@
 
 The @filepath{mzgsl.plt} PLaneT package provides bindings to the
 @link["http://www.gnu.org/software/gsl/"]{GNU Scientific Library}.  It
-is currently very incomplete: only the random number generators from
-the GSL are bound.
+is currently very incomplete, but growing.  The library aims to
+provide only basic bindings to the GSL; a more ``scheme-like'' library
+could be constructed on top of this base, but this is not provided by
+mzgsl.
 
 You can use the bindings from @filepath{mzgsl.plt} in your programs by
 issuing the command @scheme[(require (planet "all.ss" ("wmfarr"
