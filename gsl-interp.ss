@@ -19,18 +19,9 @@
 
 
 (require "gsl-lib.ss"
+         "define-pointer-type.ss"
          scheme/foreign
          (rename-in scheme (-> ->/c)))
-
-(provide/contract
- (_gsl-interp-type-pointer ctype?)
- (_gsl-interp-pointer ctype?)
- (_gsl-interp-accel-pointer ctype?)
- (_gsl-spline-pointer ctype?)
- (gsl-interp-type? (->/c any/c boolean?))
- (gsl-interp? (->/c any/c boolean?))
- (gsl-interp-accel? (->/c any/c boolean?))
- (gsl-spline? (->/c any/c boolean?)))
 
 (unsafe!)
 
@@ -44,27 +35,19 @@
                       libgsl
                       type))))))
 
-(define *gsl-interp-type-pointer-tag* (gensym '_gsl-interp-type-pointer))
-(define _gsl-interp-type-pointer (_cpointer *gsl-interp-type-pointer-tag*))
-(define *gsl-interp-pointer-tag* (gensym '_gsl-interp-pointer))
-(define _gsl-interp-pointer (_cpointer *gsl-interp-pointer-tag*))
-(define *gsl-interp-accel-pointer-tag* (gensym '_gsl-interp-accel-pointer))
-(define _gsl-interp-accel-pointer (_cpointer *gsl-interp-accel-pointer-tag*))
-(define *gsl-spline-pointer-tag* (gensym '_gsl-spline-pointer))
-(define _gsl-spline-pointer (_cpointer *gsl-spline-pointer-tag*))
+(define-pointer-type _gsl-interp-type-pointer gsl-interp-type?)
+(define-pointer-type _gsl-interp-pointer gsl-interp?)
+(define-pointer-type _gsl-interp-accel-pointer gsl-interp-accel?)
+(define-pointer-type _gsl-spline-pointer gsl-spline?)
 
-(define (gsl-interp-type? obj)
-  (and (cpointer? obj)
-       (cpointer-has-tag? obj *gsl-interp-type-pointer-tag*)))
-(define (gsl-interp? obj)
-  (and (cpointer? obj)
-       (cpointer-has-tag? obj *gsl-interp-type-pointer-tag*)))
-(define (gsl-interp-accel? obj)
-  (and (cpointer? obj)
-       (cpointer-has-tag? obj *gsl-interp-accel-pointer-tag*)))
-(define (gsl-spline? obj)
-  (and (cpointer? obj)
-       (cpointer-has-tag? obj *gsl-spline-pointer-tag*)))
+(provide _gsl-interp-type-pointer _gsl-interp-pointer 
+         _gsl-interp-accel-pointer _gsl-spline-pointer)
+(provide/contract
+ (gsl-interp-type? (->/c any/c boolean?))
+ (gsl-interp? (->/c any/c boolean?))
+ (gsl-interp-accel? (->/c any/c boolean?))
+ (gsl-spline? (->/c any/c boolean?)))
+
 
 (define-interp gsl-interp-alloc (_fun _gsl-interp-type-pointer _ufixnum -> 
                                       (res : _gsl-interp-pointer) -> 

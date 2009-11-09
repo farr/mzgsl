@@ -19,25 +19,26 @@
 
 (require "gsl-lib.ss"
          "gsl-function.ss"
-         scheme/foreign)
+         "define-pointer-type.ss"
+         scheme/foreign
+         (rename-in scheme (-> ->/c)))
 
 (unsafe!)
 
-(define-syntax define-gsl-root-struct
-  (syntax-rules ()
-    ((define-gsl-root-struct _name-pointer name?)
-     (begin
-       (define tag (gensym '_name-pointer))
-       (define _name-pointer (_cpointer tag))
-       (provide name?)
-       (define (name? obj)
-         (and (cpointer? obj)
-              (cpointer-has-tag? obj tag)))))))
+(define-pointer-type _gsl-root-fsolver-type-pointer gsl-root-fsolver-type?)
+(define-pointer-type _gsl-root-fsolver-pointer gsl-root-fsolver?)
+(define-pointer-type _gsl-root-fdfsolver-type-pointer gsl-root-fdfsolver-type?)
+(define-pointer-type _gsl-root-fdfsolver-pointer gsl-root-fdfsolver?)
 
-(define-gsl-root-struct _gsl-root-fsolver-type-pointer gsl-root-fsolver-type?)
-(define-gsl-root-struct _gsl-root-fsolver-pointer gsl-root-fsolver?)
-(define-gsl-root-struct _gsl-root-fdfsolver-type-pointer gsl-root-fdfsolver-type?)
-(define-gsl-root-struct _gsl-root-fdfsolver-pointer gsl-root-fdfsolver?)
+(provide/contract
+ (_gsl-root-fsolver-type-pointer ctype?)
+ (_gsl-root-fsolver-pointer ctype?)
+ (_gsl-root-fdfsolver-type-pointer ctype?)
+ (_gsl-root-fdfsolver-pointer ctype?)
+ (gsl-root-fsolver-type? (->/c any/c boolean?))
+ (gsl-root-fsolver? (->/c any/c boolean?))
+ (gsl-root-fdfsolver-type? (->/c any/c boolean?))
+ (gsl-root-fdfsolver? (->/c any/c boolean?)))
 
 (define gsl-root-fsolver-free
   (get-ffi-obj 'gsl_root_fsolver_free libgsl
