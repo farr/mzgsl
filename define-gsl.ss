@@ -1,6 +1,6 @@
 #lang scheme
 
-#|  define-pointer-type.ss: Define a tagged cpointer, predicate, etc. 
+#|  define-gsl.ss: Convenience macro for extracing libgsl values. 
     Copyright (C) 2009 Will M. Farr <wmfarr@gmail.com>
 
     This program is free software; you can redistribute it and/or modify
@@ -19,20 +19,18 @@
 |#
 
 (require scheme/foreign
-         (rename-in scheme (-> ->/c)))
+         "gsl-lib.ss")
 
-(provide define-pointer-type)
+(provide define-gsl)
 
 (unsafe!)
 
-(define-syntax define-pointer-type
+(define-syntax define-gsl
   (syntax-rules ()
-    ((define-pointer-type name pred?)
-     (define-values (name pred?)
-       (let* ((tag (gensym 'name))
-              (name (_cpointer tag))
-              (pred? (lambda (obj) 
-                       (and (cpointer? obj)
-                            (cpointer-has-tag? obj tag)))))
-         (values name pred?))))))
-
+    ((define-interp name type)
+     (begin 
+       (provide name)
+       (define name 
+         (get-ffi-obj (regexp-replaces 'name '((#rx"-" "_") (#rx"!" "")))
+                      libgsl
+                      type))))))

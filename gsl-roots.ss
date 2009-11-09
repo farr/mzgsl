@@ -20,6 +20,7 @@
 (require "gsl-lib.ss"
          "gsl-function.ss"
          "define-pointer-type.ss"
+         "define-gsl.ss"
          scheme/foreign
          (rename-in scheme (-> ->/c)))
 
@@ -47,57 +48,47 @@
   (get-ffi-obj 'gsl_root_fdfsolver_free libgsl
                (_fun _gsl-root-fdfsolver-pointer -> _void)))
 
-(define-syntax define-gsl-roots
-  (syntax-rules ()
-    ((define-gsl-roots name type)
-     (begin
-       (provide name)
-       (define name
-         (get-ffi-obj (regexp-replaces 'name '((#rx"-" "_") (#rx"!" "")))
-                      libgsl
-                      type))))))
-
-(define-gsl-roots gsl-root-fsolver-alloc
+(define-gsl gsl-root-fsolver-alloc
   (_fun _gsl-root-fsolver-type-pointer ->
         (res : _gsl-root-fsolver-pointer) ->
         (begin
           (register-finalizer res gsl-root-fsolver-free)
           res)))
-(define-gsl-roots gsl-root-fdfsolver-alloc
+(define-gsl gsl-root-fdfsolver-alloc
   (_fun _gsl-root-fdfsolver-type-pointer ->
         (res : _gsl-root-fdfsolver-pointer) ->
         (begin
           (register-finalizer res gsl-root-fdfsolver-free)
           res)))
 
-(define-gsl-roots gsl-root-fsolver-bisection _gsl-root-fsolver-type-pointer)
-(define-gsl-roots gsl-root-fsolver-brent _gsl-root-fsolver-type-pointer)
-(define-gsl-roots gsl-root-fsolver-falsepos _gsl-root-fsolver-type-pointer)
-(define-gsl-roots gsl-root-fdfsolver-newton _gsl-root-fdfsolver-type-pointer)
-(define-gsl-roots gsl-root-fdfsolver-secant _gsl-root-fdfsolver-type-pointer)
-(define-gsl-roots gsl-root-fdfsolver-steffenson _gsl-root-fdfsolver-type-pointer)
+(define-gsl gsl-root-fsolver-bisection _gsl-root-fsolver-type-pointer)
+(define-gsl gsl-root-fsolver-brent _gsl-root-fsolver-type-pointer)
+(define-gsl gsl-root-fsolver-falsepos _gsl-root-fsolver-type-pointer)
+(define-gsl gsl-root-fdfsolver-newton _gsl-root-fdfsolver-type-pointer)
+(define-gsl gsl-root-fdfsolver-secant _gsl-root-fdfsolver-type-pointer)
+(define-gsl gsl-root-fdfsolver-steffenson _gsl-root-fdfsolver-type-pointer)
 
-(define-gsl-roots gsl-root-fsolver-set!
+(define-gsl gsl-root-fsolver-set!
   (_fun _gsl-root-fsolver-pointer _gsl-function-pointer _double* _double* -> _int))
-(define-gsl-roots gsl-root-fsolver-iterate!
+(define-gsl gsl-root-fsolver-iterate!
   (_fun _gsl-root-fsolver-pointer -> _int))
-(define-gsl-roots gsl-root-fsolver-name
+(define-gsl gsl-root-fsolver-name
   (_fun _gsl-root-fsolver-pointer -> _string))
-(define-gsl-roots gsl-root-fsolver-x-lower
+(define-gsl gsl-root-fsolver-x-lower
   (_fun _gsl-root-fsolver-pointer -> _double))
-(define-gsl-roots gsl-root-fsolver-x-upper
+(define-gsl gsl-root-fsolver-x-upper
   (_fun _gsl-root-fsolver-pointer -> _double))
 
-(define-gsl-roots gsl-root-fdfsolver-set!
+(define-gsl gsl-root-fdfsolver-set!
   (_fun _gsl-root-fdfsolver-pointer _gsl-function-fdf-pointer _double* -> _int))
-(define-gsl-roots gsl-root-fdfsolver-iterate!
+(define-gsl gsl-root-fdfsolver-iterate!
   (_fun _gsl-root-fdfsolver-pointer -> _int))
-(define-gsl-roots gsl-root-fdfsolver-root
+(define-gsl gsl-root-fdfsolver-root
   (_fun _gsl-root-fdfsolver-pointer -> _double))
 
-(define-gsl-roots gsl-root-test-interval
+(define-gsl gsl-root-test-interval
   (_fun _double* _double* _double* _double* -> _bool))
-(define-gsl-roots gsl-root-test-residual
+(define-gsl gsl-root-test-residual
   (_fun _double* _double* -> _bool))
-(define-gsl-roots gsl-root-test-delta
+(define-gsl gsl-root-test-delta
   (_fun _double* _double* _double* _double* -> (x : _int) -> (= x 0)))
