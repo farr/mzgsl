@@ -3,11 +3,13 @@
 @(require scribble/manual
           (for-label scheme)
           (for-label (except-in scheme/foreign ->))
+          (for-label srfi/4)
           (for-label "gsl-rng.ss")
           (for-label "gsl-lib.ss")
           (for-label "gsl-function.ss")
           (for-label "gsl-roots.ss")
-          (for-label "gsl-interp.ss"))
+          (for-label "gsl-interp.ss")
+          (for-label "gsl-odeiv.ss"))
 
 @title{MzGSL: MzScheme Bindings to the GNU Scientific Library}
 
@@ -453,6 +455,200 @@ Queries for spline object properties.
 Evaluate the interpolation stored in a spline.
 
 }
+
+@section[#:tag "ODEs"]{Ordinary Differential Equations}
+@defmodule[(planet wmfarr/mzgsl:3:1/gsl-odeiv)]
+
+@deftogether[
+(@defthing[_gsl-odeiv-system ctype?]
+ @defthing[_gsl-odeiv-system-pointer ctype?]
+ @defproc[(make-gsl-odeiv-system 
+           (f (-> real? cpointer? cpointer? cpointer? natural-number/c))
+           (j (-> real? cpointer? cpointer? cpointer? cpointer? 
+                  natural-number/c))
+           (dim natural-number/c)
+           (params any/c))
+          gsl-odeiv-system?]
+ @defproc[(gsl-odeiv-system? (obj any/c)) boolean?]
+ @defproc[(gsl-odeiv-system-function (sys gsl-odeiv-system?))
+          (-> real? cpointer? cpointer? cpointer? natural-number/c)]
+ @defproc[(gsl-odeiv-system-jacobian (sys gsl-odeiv-system?))
+          (-> real? cpointer? cpointer? cpointer? cpointer? 
+                  natural-number/c)]
+ @defproc[(gsl-odeiv-system-dimension (sys gsl-odeiv-system?))
+          natural-number/c]
+ @defproc[(gsl-odeiv-system-params (sys gsl-odeiv-system?)) any/c])]{
+
+Functions related to the @scheme[_gsl-odeiv-system] cstruct.  See
+@scheme[make-gsl-odeiv-system-function] and
+@scheme[make-gsl-odeiv-system-jacobian] for a more convenient and
+``scheme-y'' way to define the @scheme[f] and @scheme[jacobian]
+arguments.
+
+}
+
+@deftogether[
+(@defproc[(make-gsl-odeiv-system-function 
+           (dim natural-number/c)
+           (scheme-f (-> real? (vectorof real?) (vectorof real?))))
+          (-> real? cpointer? cpointer? any/c natural-number/c)]
+ @defproc[(make-gsl-odeiv-system-jacobian
+           (dim natural-number/c)
+           (scheme-j 
+            (-> real? (vectorof real?) (values (vectorof real?) (vectorof real?)))))
+          (-> real? cpointer? cpointer? cpointer? any/c natural-number/c)])]{
+
+Convenience procedures that convert scheme functions into functions
+appropriate as arguments to @scheme[make-gsl-odeiv-system].
+@scheme[scheme-f] should take a time and a vector of
+dependent-variable values, @scheme[y], and return a vector of
+derivatives, @scheme[dydt].  @scheme[scheme-j] should take a time and
+a vector of depend-varuable values, @scheme[y], and return two values:
+first, the jacobian of the derivatives, @scheme[dfdy] and, second, the
+time-derivative of the derivative, @scheme[dfdt].  The jacobian is a
+vector of vectors (in row-major order---that is, the last index steps
+the fastest), while the time-derivative is a single vector.  See the
+@filepath["test/gsl-odeiv-test.ss"] file for examples.
+
+}
+
+@deftogether[
+(@defthing[_gsl-odeiv-step-type-pointer ctype?]
+ @defthing[_gsl-odeiv-step-pointer ctype?]
+ @defproc[(gsl-odeiv-step-type? (obj any/c)) boolean?]
+ @defproc[(gsl-odeiv-step? (obj any/c)) boolean?])]{
+
+Types and predicates for stepper objects and stepper types. 
+
+}
+
+@deftogether[
+(@defproc[(gsl-odeiv-step-alloc (type gsl-odeiv-step-type?) 
+                                (size natural-number/c))    
+          gsl-odeiv-step?]
+ @defproc[(gsl-odeiv-step-reset! (step gsl-odeiv-step?)) any]
+ @defproc[(gsl-odeiv-step-name (step gsl-odeiv-step?)) string?]
+ @defproc[(gsl-odeiv-step-order (step gsl-odeiv-step?)) natural-number/c])]{
+
+Allocate, interrogate, and reset steppers.  
+
+}
+
+@defproc[(gsl-odeiv-step-apply
+          (step gsl-odeiv-step?)
+          (t real?)
+          (h real?)
+          (y f64vector?)
+          (yerr f64vector?)
+          (dydt-in f64vector?)
+          (dydt-out f64vector?)
+          (sys gsl-odeiv-system?))
+         natural-number/c]{
+
+Apply a stepper to compute a single step forward.
+
+}
+
+@deftogether[
+(@defthing[gsl-odeiv-step-rk2 gsl-odeiv-step-type?]
+ @defthing[gsl-odeiv-step-rkf45 gsl-odeiv-step-type?]
+ @defthing[gsl-odeiv-step-rkck gsl-odeiv-step-type?]
+ @defthing[gsl-odeiv-step-rk8pd gsl-odeiv-step-type?]
+ @defthing[gsl-odeiv-step-rk2imp gsl-odeiv-step-type?]
+ @defthing[gsl-odeiv-step-rk4imp gsl-odeiv-step-type?]
+ @defthing[gsl-odeiv-step-bsimp gsl-odeiv-step-type?]
+ @defthing[gsl-odeiv-step-gear1 gsl-odeiv-step-type?]
+ @defthing[gsl-odeiv-step-gear2 gsl-odeiv-step-type?])]{
+
+Stepper types.  
+
+}
+
+@deftogether[
+(@defthing[_gsl-odeiv-control-pointer ctype?]
+ @defproc[(gsl-odeiv-control? (obj any/c)) boolean?])]{
+
+Step-size control objects. 
+
+}
+
+@deftogether[
+(@defproc[(gsl-odeiv-control-standard-new
+           (eps-abs real?)
+           (eps-rel real?)
+           (a-y real?)
+           (a-dydt real?))
+          gsl-odeiv-control?]
+ @defproc[(gsl-odeiv-control-y-new 
+           (eps-abs real?)
+           (eps-rel real?))
+          gsl-odeiv-control?]
+ @defproc[(gsl-odeiv-control-yp-new
+           (eps-abs real?)
+           (eps-rel real?))
+          gsl-odeiv-control?]
+ @defproc[(gsl-odeiv-control-scaled-new 
+           (eps-abs real?)
+           (eps-rel real?)
+           (a-y real?)
+           (a-dydt real?)
+           (scale-abs f64vector?))
+          gsl-odeiv-control?])]{
+
+Constructors for the various control objects. 
+
+}
+
+@defproc[(gsl-odeiv-control-hadjust
+          (control gsl-odeiv-control?)
+          (step gsl-odeiv-step?)
+          (y f64vector?)
+          (yerr f64vector?)
+          (dydt f64vector?)
+          (h real?))
+         real?]{ Returns the new stepsize according to @scheme[control]. }
+
+@defproc[(gsl-odeiv-control-name (control gsl-odeiv-control?)) string?]{
+
+The name of @scheme[control].
+
+}
+
+@deftogether[
+(@defthing[_gsl-odeiv-evolve-pointer ctype?]
+ @defproc[(gsl-odeiv-evolve? (obj any/c)) boolean?]
+ @defproc[(gsl-odeiv-alloc (size natural-number/c)) gsl-odeiv-evolve?])]
+
+@defproc[(gsl-odeiv-evolve-apply 
+          (evolve gsl-odeiv-evolve?)
+          (control gsl-odeiv-control?)
+          (step gsl-odeiv-step?)
+          (system gsl-odeiv-system?)
+          (t0 real?)
+          (t1 real?)
+          (h real?)
+          (y f64vector?))
+         (values (t real?) (h real?))]{
+
+Uses @scheme[evolve] to advance @scheme[system] with individual steps
+from @scheme[step] toward @scheme[t1], satisfying the error criterion
+in @scheme[control].  The evolution begins at time @scheme[t0] with
+state @scheme[y].  It is guaranteed that the evolution will not exceed
+@scheme[t1].  The parameter @scheme[h] is the initial stepsize to
+attempt.  Upon return, @scheme[y] is updated with the state values at
+time @scheme[t], and @scheme[h] is the new recommended stepsize.  You
+should call @scheme[gsl-odeiv-evolve-apply] repeatedly in a loop until
+it has advanced the system as far as you want.
+
+}
+
+@defproc[(gsl-odeiv-evolve-reset! (ev gsl-odeiv-evolve?)) integer?]{
+
+This should be called whenever the next step with @scheme[ev] will not
+be a continuation of the last.
+
+}
+
 
 @section[#:tag "License"]{License}
 
