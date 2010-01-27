@@ -65,7 +65,7 @@
                                                    (res : _gsl-sf-result-pointer = (make-gsl-sf-result 0.0 0.0))
                                                    -> _fixnum ->
                                                    (values (gsl-sf-result-val res)
-                                                           (gsl-sf-result-err res)))))))))))))
+                                                           (gsl-sf-result-err res))))))))))))
 
 (define-sf-error gsl-sf-bessel-J0)
 (define-sf-error gsl-sf-bessel-J1)
