@@ -1,0 +1,8 @@
+-*- outline -*-
+
+* Todo:
+** Change from PLaneT schemeunit to distro schemeunit.
+** Finish bindings for special functions
+*** All the one-argument bindings done
+*** Need documentation
+*** Need special code for multi-arg bindings. 
