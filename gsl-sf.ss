@@ -19,7 +19,8 @@
 |#
 
 (require "gsl-lib.ss"
-         scheme/foreign)
+         scheme/foreign
+         (rename-in scheme (-> ->/c)))
 
 (unsafe!)
 
@@ -57,6 +58,9 @@
                                             (syntax name))))
          (syntax/loc stx
            (begin
+             (provide/contract
+              (name (->/c real? real?))
+              (name/error (->/c real? (values real? real?))))
              (define name
                (get-ffi-obj (regexp-replaces 'name '((#rx"-" "_"))) libgsl (_fun _double* -> _double)))
              (define name/error
