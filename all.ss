@@ -19,11 +19,16 @@
 |#
 
 
-(require "gsl-rng.ss" "gsl-lib.ss" "gsl-roots.ss" 
-         "gsl-interp.ss" "gsl-function.ss")
+(require "gsl-function.ss" "gsl-interp.ss"
+         "gsl-lib.ss" "gsl-multiroot.ss"
+         "gsl-odeiv.ss" "gsl-rng.ss" "gsl-roots.ss"
+         "gsl-sf.ss")
 
-(provide (all-from-out "gsl-rng.ss")
-         (all-from-out "gsl-lib.ss")
-         (all-from-out "gsl-roots.ss")
+(provide (all-from-out "gsl-function.ss")
          (all-from-out "gsl-interp.ss")
-         (all-from-out "gsl-function.ss"))
+         (all-from-out "gsl-lib.ss")
+         (all-from-out "gsl-multiroot.ss")
+         (all-from-out "gsl-odeiv.ss")
+         (all-from-out "gsl-rng.ss")
+         (all-from-out "gsl-roots.ss")
+         (all-from-out "gsl-sf.ss"))
